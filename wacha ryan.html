@@ -1,0 +1,130 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wacha Ryan Braston - UNEB Science Project 2025</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Times New Roman', Times, serif; }
+        .toggle-content { display: none; }
+        .toggle-content.active { display: block; }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <header class="bg-blue-600 text-white py-4">
+        <div class="container mx-auto px-4">
+            <h1 class="text-3xl font-bold">Wacha Ryan Braston</h1>
+            <p class="text-lg">UNEB S.4 Science Project 2025</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-6">
+        <section class="mb-6">
+            <h2 class="text-2xl font-semibold mb-2">About Me</h2>
+            <p class="text-lg">
+                I am Wacha Ryan Braston, a 16-year-old student at St. Joseph's S.S.S Naggalama. My 2025 UNEB Science Project, titled "DIY Mini Fan for Affordable Cooling," addresses the challenge of unaffordable cooling systems for rural students while serving as an educational tool for electric circuits.
+            </p>
+        </section>
+
+        <section class="mb-6">
+            <h2 class="text-2xl font-semibold mb-2">Project Overview</h2>
+            <p class="text-lg">
+                The project, conducted from 17th July 2024 to 13th March 2025, fulfills UNEB’s theme of "Skills and Innovation for Sustainable Living." It involves building a low-cost mini fan using locally available materials, demonstrating electric circuit principles and practical skills.
+            </p>
+            <button id="toggleDetails" class="mt-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Show Project Details</button>
+            <div id="projectDetails" class="toggle-content mt-4">
+                <h3 class="text-xl font-semibold">Objectives</h3>
+                <ul class="list-disc ml-6">
+                    <li>Build a working mini fan using local materials.</li>
+                    <li>Demonstrate electric circuit knowledge.</li>
+                    <li>Develop skills in cutting, gluing, wiring, and assembly.</li>
+                    <li>Meet UNEB project standards.</li>
+                    <li>Mitigate heat effects during the day.</li>
+                </ul>
+                <h3 class="text-xl font-semibold mt-4">Hypothesis</h3>
+                <p>A DC motor powered by a lithium cell through a switch, fitted with a rotor, can function as a low-cost fan, generating airflow.</p>
+                <h3 class="text-xl font-semibold mt-4">Results</h3>
+                <ul class="list-disc ml-6">
+                    <li>Produced effective airflow, portable and efficient on low voltage.</li>
+                    <li>Stable design suitable for cooling or educational use.</li>
+                </ul>
+                <h3 class="text-xl font-semibold mt-4">Challenges</h3>
+                <ul class="list-disc ml-6">
+                    <li>Limited battery power required higher-capacity cells.</li>
+                    <li>Initial rotor imbalance needed design adjustments.</li>
+                    <li>Loose wiring required reattachment for consistent power.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="mb-6">
+            <h2 class="text-2xl font-semibold mb-2">How It Works</h2>
+            <p class="text-lg">
+                The fan uses a simple circuit: a lithium battery powers a DC motor via a switch. When turned ON, current spins the motor’s rotor, creating airflow. This demonstrates energy conversion from electrical to mechanical.
+            </p>
+        </section>
+
+        <section class="mb-6">
+            <h2 class="text-2xl font-semibold mb-2">Contact</h2>
+            <p class="text-lg">
+                For inquiries about the project, contact me at St. Joseph's S.S.S Naggalama or via the school’s administration.
+            </p>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-4">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2025 Wacha Ryan Braston. All rights reserved.</p>
+            <p>Hosted on GitHub Pages</p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('toggleDetails').addEventListener('click', function() {
+            const details = document.getElementById('projectDetails');
+            details.classList.toggle('active');
+            this.textContent = details.classList.contains('active') ? 'Hide Project Details' : 'Show Project Details';
+        });
+    </script>
+</body>
+</html>
